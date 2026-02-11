@@ -1,0 +1,145 @@
+---
+title: Device Configuration and Maintenance
+description: How to configure settings, calibrate sensors, and perform routine maintenance on Osprey systems.
+---
+
+## Overview
+
+Configure your Osprey Measurement Systems devices, such as the Tilt String (OTS) and In-Place Extensometer (IPX), to match your project needs. This includes setting up the sensor bus, calibrating for accuracy, adapting to environmental conditions, updating firmware, and following maintenance schedules. Proper configuration ensures reliable data capture in challenging geotechnical environments.
+
+<Callout kind="info">
+Review the device data sheets and user manuals before starting. Always power off devices during configuration changes.
+</Callout>
+
+## Sensor Bus Setup and Calibration
+
+The sensor bus connects multiple micro-tilts or extensometers in a serial chain. Use the Osprey configuration tool to assign IDs and calibrate.
+
+<Steps>
+  <Step title="Connect the Sensor Bus" icon="plug">
+    Attach the OTS cable to the data logger using the single access point connector.
+
+    Ensure all sensors are powered and the bus terminates correctly.
+  </Step>
+  <Step title="Assign Sensor IDs" icon="settings">
+    Launch the Osprey Config Tool.
+
+````bash
+osprey-config --connect /dev/ttyUSB0 --scan-bus
+````
+
+    This detects up to 150 sensors and assigns sequential IDs.
+  </Step>
+  <Step title="Calibrate Sensors" icon="target">
+    Run zero-point calibration in a stable environment.
+
+````bash
+osprey-config --calibrate --zero all
+````
+
+    Verify readings stabilize within `±0.01°`.
+  </Step>
+</Steps>
+
+<ParamField path="bus_id" param-type="integer" required="true">
+  Unique bus identifier for multi-device setups (1-255).
+</ParamField>
+
+<ParamField query="spacing_mm" param-type="integer" required="false" default="500">
+  Distance between sensors in millimeters. Adjust for project density.
+</ParamField>
+
+## Environmental Adaptations
+
+Adapt configurations for burial, embedding, or exposed installations.
+
+<Tabs>
+  <Tab title="Burial/Trench" icon="package">
+    Use direct burial mode for pipelines or trenches.
+
+    <ParamField body="protection_level" param-type="string" required="true">
+      Set to `"ip68"` for submersion up to 2m.
+    </ParamField>
+
+    <Callout kind="tip">
+      Seal connectors with silicone grease before burial.
+    </Callout>
+  </Tab>
+  <Tab title="Concrete Embedding" icon="layers">
+    Embed in diaphragm walls or tower cores.
+
+    <ParamField body="vibration_threshold" param-type="float" required="false" default="5.0">
+      High vibration tolerance in g-forces.
+    </ParamField>
+
+    Test post-curing with a 24-hour stability check.
+  </Tab>
+  <Tab title="Exposed Surface" icon="shield">
+    Mount on railways or retaining walls.
+
+    Increase sampling rate for dynamic events.
+
+````javascript
+// Config JSON example
+{
+  "sampling_rate_hz": 10,
+  "event_detection": true
+}
+````
+  </Tab>
+</Tabs>
+
+## Firmware Updates and Tool Usage
+
+Keep firmware current for optimal performance. Download updates from the support portal.
+
+<CodeGroup tabs="Linux,Windows,macOS">
+  ```bash
+# Linux update
+sudo osprey-update --firmware v2.1.0 --device /dev/ttyUSB0
+  ```
+  ```powershell
+# Windows PowerShell
+osprey-update.exe -f v2.1.0 -d COM3
+  ```
+  ```bash
+# macOS
+osprey-update --firmware v2.1.0 --device /dev/cu.usbserial-123
+  ```
+</CodeGroup>
+
+Visit [support tools](https://ospreymeasurement.systems/support/) for the latest Config Tool and diagnostics.
+
+## Scheduled Maintenance Checklists
+
+Perform monthly checks to ensure longevity.
+
+<Columns cols={2}>
+  <Card title="Monthly Inspection" icon="search" horizontal>
+    - Visual check for cable damage
+    - Verify bus connectivity
+    - Recalibrate if drift `>0.05°`
+  </Card>
+  <Card title="Quarterly Deep Check" icon="tools" horizontal>
+    - Full zero calibration
+    - Firmware version check
+    - Environmental seal integrity
+  </Card>
+</Columns>
+
+<Expandable title="Troubleshooting Common Issues" default-open="false">
+  **No Bus Detection:**
+  - Check power supply (`>12V DC`)
+  - Rescan with `osprey-config --force-scan`
+
+  **Tilt Drift:**
+  - Perform field zero: `osprey-config --zero-field`
+  - Inspect for mechanical stress.
+
+  **Firmware Failure:**
+  - Boot in recovery: Hold reset during power-on.
+</Expandable>
+
+<Callout kind="tip">
+  Log all maintenance actions in your project records. Schedule annual professional servicing for embedded installations.
+</Callout>

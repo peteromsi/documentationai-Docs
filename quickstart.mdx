@@ -1,0 +1,130 @@
+---
+title: Getting Started with Osprey Devices
+description: Step-by-step guide to installing and setting up Osprey Tilt String or In-Place Extensometer for initial monitoring.
+---
+
+## Prerequisites
+
+<Callout kind="info" title="Before You Begin">
+Ensure you have the following:
+
+- Osprey Tilt String (OTS) or In-Place Extensometer (IPX) device
+- Data logger compatible with serial bus (e.g., Campbell Scientific CR series)
+- Mounting hardware (clamps, anchors, or concrete embedding materials)
+- Multimeter for basic electrical checks
+- Laptop with Python 3+ and `pyserial` library for data verification
+- Site survey confirming stable mounting points
+
+Review the product data sheet for your specific model.
+</Callout>
+
+## Unboxing and Required Tools
+
+Upon receiving your Osprey device, verify the contents:
+
+1. Sensor cable with micro-tilts (OTS) or extensometer rods (IPX)
+2. Termination connectors
+3. Mounting brackets and fixings
+4. Quick-start guide
+
+Gather these tools for installation:
+
+| Tool              | Purpose                          |
+|-------------------|----------------------------------|
+| Torque wrench     | Secure mounting to spec          |
+| Cable crimper     | Sensor bus connections           |
+| Level             | Ensure vertical alignment        |
+| Serial adapter    | Connect to data logger           |
+
+## Site Preparation and Mounting
+
+Prepare your site by clearing debris and marking measurement points. Osprey devices support multiple mounting options.
+
+<Tabs>
+  <Tab title="Tilt String (OTS)" icon="trending-up">
+    <Steps>
+      <Step title="Embed in Concrete">
+        Position the cable in formwork for diaphragm walls or tower cores. Space sensors at 0.5m intervals for high precision.
+      </Step>
+      <Step title="Trench or Surface Mount">
+        Lay in trenches with pipelines or fix to retaining walls using clamps. Ensure cable protection from traffic.
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="In-Place Extensometer (IPX)" icon="ruler">
+    <Steps>
+      <Step title="Borehole Installation">
+        Drill borehole and insert anchor rods. Grout extensometer in place for stable reference.
+      </Step>
+      <Step title="Surface Mounting">
+        Anchor to structural elements like piles or walls. Verify alignment with a plumb line.
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+<Callout kind="tip">
+Always test continuity with a multimeter before finalizing mounts. Target vibration tolerance exceeds 10g.
+</Callout>
+
+## Connect to Data Logger
+
+Route the single serial bus cable to your data logger. Use waterproof connectors for outdoor deployments.
+
+<Steps>
+  <Step title="Power Up">
+    Connect power (typically 12V DC) and ground. Verify no shorts.
+  </Step>
+  <Step title="Configure Logger">
+    Set baud rate to 9600 and polling interval to 1 minute.
+  </Step>
+  <Step title="Terminate Bus">
+    Add 120Ω resistor at the end for signal integrity.
+  </Step>
+</Steps>
+
+## First Data Reading and Verification
+
+Use this Python script to poll the sensor bus and verify readings.
+
+<CodeGroup tabs="Python" show-lines="true">
+  ```python
+  import serial
+  import time
+
+  ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)  # Adjust port as needed
+
+  while True:
+      ser.write(b'POLL\n')  # Send poll command
+      data = ser.readline().decode('utf-8').strip()
+      if data:
+          print(f"Tilt readings: {data}")  # e.g., "Tilt1: 0.12deg, Tilt2: 0.05deg"
+      time.sleep(60)  # Poll every minute
+  ```
+</CodeGroup>
+
+Expect tilt values in degrees (`<0.01°` precision) or extension in mm. Compare against known baselines.
+
+<Expandable title="Troubleshooting Common Issues" default-open="false">
+- No data: Check baud rate and termination.
+- Erratic readings: Secure loose mounts.
+- Logger errors: Update firmware via manufacturer tools.
+</Expandable>
+
+## Next Steps
+
+<Columns cols={3}>
+  <Card title="Configuration" icon="settings" href="/configuration">
+    Advanced logger setup and thresholds.
+  </Card>
+  <Card title="Monitoring Best Practices" icon="bar-chart-3" href="/guides/monitoring">
+    Long-term data management.
+  </Card>
+  <Card title="Support Resources" icon="help-circle" href="/support">
+    Data sheets, manuals, and tools.
+  </Card>
+</Columns>
+
+<Callout kind="success">
+Your Osprey device is now operational. Monitor for 24 hours to baseline performance.
+</Callout>

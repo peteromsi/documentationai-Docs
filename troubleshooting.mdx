@@ -1,0 +1,114 @@
+---
+title: Troubleshooting Common Issues
+description: Guidance on identifying and resolving problems with Osprey measurement systems to ensure reliable performance.
+---
+
+## Overview
+
+When issues arise with your Osprey Tilt String (OTS) or In-Place Extensometer (IPX), follow these structured steps to diagnose and resolve them quickly. Common problems include sensor signal loss, environmental interference, and data access failures. Start with basic checks before advancing to advanced diagnostics.
+
+<Callout kind="tip">
+Always power cycle the system and verify connections before proceeding. Document any error codes for support tickets.
+</Callout>
+
+## Error Indicators and Diagnostic Steps
+
+Use the table below to identify issues based on LED indicators or software logs from the Osprey Data Portal.
+
+| Error Code | LED Pattern          | Description                          | Initial Action                  |
+|------------|----------------------|--------------------------------------|---------------------------------|
+| ERR_001   | Solid Red            | No sensor signal                     | Check cable connections         |
+| ERR_002   | Blinking Yellow      | Vibration threshold exceeded         | Inspect mounting stability      |
+| ERR_003   | Alternating Green/Red| Data access point offline            | Restart access point            |
+| ERR_004   | Solid Yellow         | Environmental interference detected  | Relocate or shield sensors      |
+
+### Basic Diagnostic Steps
+
+<Steps>
+  <Step title="Verify Power" icon="zap">
+    Ensure the power supply delivers `12-24V DC` at the required amperage. Measure voltage at the data access point.
+  </Step>
+  <Step title="Inspect Connections" icon="link">
+    Check all serial bus connectors for corrosion or looseness. Clean with isopropyl alcohol if needed.
+  </Step>
+  <Step title="Run Self-Test" icon="play">
+    Use the Osprey Tools app to initiate a self-test. Review logs for specific sensor failures.
+  </Step>
+  <Step title="Check Logs" icon="file-text">
+    Download logs from the portal and search for `ERR_` patterns.
+  </Step>
+</Steps>
+
+## Handling Vibration or Environmental Interference
+
+High vibration from rail activity or construction can trigger false readings on OTS units. Electromagnetic interference from nearby equipment affects IPX signals.
+
+<Tabs>
+  <Tab title="Vibration Issues" icon="alert-triangle">
+    <Callout kind="alert">
+    Excessive vibration can damage micro-tilts. Do not exceed `5g` RMS.
+    </Callout>
+
+    1. Secure mounting with approved clamps.
+    2. Add dampening pads between sensor and surface.
+    3. Adjust threshold in config: `vibration_threshold = 2.5g`.
+
+    <Expandable title="Advanced Calibration" default-open="false">
+      Recalibrate using the Tools app:
+
+````bash
+ots-calibrate --device /dev/ots1 --threshold 2.5 --duration 300s
+````
+
+    </Expandable>
+  </Tab>
+  <Tab title="EMI Interference" icon="zap">
+    Shield cables with grounded foil wrap. Maintain `>2m` distance from power lines.
+
+    Test with a portable EMI meter. If levels exceed `50 dBμV/m`, relocate the data access point.
+  </Tab>
+</Tabs>
+
+## Data Access Point Failures
+
+Data access points (DAPs) handle serial bus communication. Failures often stem from firmware issues or network problems.
+
+<Expandable title="Firmware Recovery Steps" default-open="true">
+  1. Connect via USB to a laptop.
+  2. Boot into recovery mode by holding the reset button for `10s`.
+  3. Flash latest firmware:
+
+````javascript
+// Using Node.js CLI tool
+const OspreyDAP = require('osprey-dap-sdk');
+const dap = new OspreyDAP('/dev/ttyUSB0');
+await dap.flashFirmware('firmware-v2.1.0.bin');
+````
+
+  4. Verify with `dap.status()`.
+
+  Contact support if recovery fails.
+</Expandable>
+
+## Repair and Replacement Procedures
+
+For irreparable damage, follow these replacement guidelines.
+
+<Columns cols={2}>
+  <Card title="Sensor Replacement" icon="settings" href="#">
+    Replace individual micro-tilts without full cable swap. Tools required: crimping tool, heat gun.
+  </Card>
+  <Card title="Full Cable Swap" icon="refresh-cw" href="#">
+    Splice new OTS cable using waterproof connectors. Test continuity before burial.
+  </Card>
+  <Card title="Warranty Claim" icon="shield" href="https://ospreymeasurement.systems/support/" target="_blank">
+    Submit photos and logs. Response within `48 hours`.
+  </Card>
+  <Card title="Field Repair Kit" icon="package" href="#">
+    Order kit with spares: sensors, connectors, dampeners.
+  </Card>
+</Columns>
+
+<Callout kind="info">
+If issues persist after these steps, open a support ticket at `support@ospreymeasurement.systems` with logs, photos, and site conditions. Reference your device serial number.
+</Callout>

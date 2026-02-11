@@ -1,0 +1,121 @@
+---
+title: Changelog
+description: Version history of Osprey Measurement Systems documentation and product updates.
+---
+
+## Recent Updates
+
+<Callout kind="info" title="Stay Updated">
+Subscribe to our newsletter or check the [support portal](https://ospreymeasurement.systems/support/) regularly for the latest firmware releases, hardware revisions, and documentation changes. You can also follow release notes on our [GitHub repository](https://github.com/ospreymeasurement).
+</Callout>
+
+<Update label="2024-10-15" description="v2.1.0" tags={["feature", "improvement"]}>
+## New Features
+
+- Added support for up to 200 micro-tilts on the Osprey Tilt String (OTS) for higher resolution monitoring.
+- Introduced wireless configuration endpoint for In-Place Extensometer (IPX) via `https://api.ospreymeasurement.systems/v2/config`.
+
+## Improvements
+
+- Enhanced data logging precision to `<0.01°` tilt accuracy.
+- Optimized firmware for lower power consumption during extended deployments.
+
+## Bug Fixes
+
+- Fixed intermittent connection drops on OTS serial bus in high-vibration environments.
+</Update>
+
+<Update label="2024-09-10" description="v2.0.0" tags={["feature", "breaking"]}>
+## New Features
+
+- Real-time dashboard integration at `https://dashboard.ospreymeasurement.systems` with live OTS and IPX visualizations.
+- API v2 endpoints for automated data export: `POST /v2/export` with JSON payloads.
+
+## Breaking Changes
+
+- Updated authentication to require `{API_KEY}` header instead of query params.
+- OTS firmware requires recalibration after upgrade.
+
+## Bug Fixes
+
+- Resolved IPX strain measurement drift under thermal expansion.
+</Update>
+
+<Update label="2024-07-25" description="v1.3.0" tags={["bugfix", "improvement"]}>
+## Improvements
+
+- Streamlined OTS installation guide with new mounting templates.
+- IPX hardware revision B: Increased vibration threshold to `>50g`.
+
+## Bug Fixes
+
+- Corrected documentation links to data sheets and user manuals.
+- Fixed known issue with OTS cable strain relief in concrete embeds.
+</Update>
+
+## Upgrade Process
+
+Follow these steps to update your Osprey devices and documentation.
+
+<Steps>
+  <Step title="Check Compatibility" icon="check-circle">
+    Verify your hardware revision matches the firmware requirements.
+    
+    | Product | Required Firmware | Hardware Rev |
+    |---------|-------------------|--------------|
+    | OTS     | v2.0+             | A or B       |
+    | IPX     | v1.3+             | B            |
+  </Step>
+  
+  <Step title="Download Firmware" icon="download">
+    <Tabs>
+      <Tab title="OTS">
+        Download from `https://ospreymeasurement.systems/support/ots-firmware-v2.1.0.zip`.
+      </Tab>
+      <Tab title="IPX">
+        Download from `https://ospreymeasurement.systems/support/ipx-firmware-v2.1.0.zip`.
+      </Tab>
+    </Tabs>
+  </Step>
+  
+  <Step title="Flash Firmware" icon="upload">
+````bash
+# Connect via USB and run:
+osprey-flash --device /dev/ttyUSB0 --firmware ots-v2.1.0.bin
+````
+  </Step>
+  
+  <Step title="Verify Update" icon="settings">
+    Check logs at `https://api.ospreymeasurement.systems/v2/status`.
+  </Step>
+</Steps>
+
+## Known Issues and Resources
+
+<ExpandableGroup>
+  <Expandable title="OTS High-Vibration Environments" default-open="true">
+    In rare cases, extreme rail traffic may cause signal noise. Mitigate by enabling the new vibration filter in v2.1.0.
+  </Expandable>
+  
+  <Expandable title="IPX Calibration Drift">
+    Perform monthly recalibration using the tools at `https://ospreymeasurement.systems/support/tools/`.
+  </Expandable>
+</ExpandableGroup>
+
+<Columns cols={3}>
+  <Card title="OTS Data Sheet" icon="file-text" href="https://ospreymeasurement.systems/wp-content/uploads/product/MS-DS10-OTS-01-Osprey-Tilt-String-Data-Sheet-1.4.pdf" target="_blank">
+    Latest specifications and mounting guides.
+  </Card>
+  
+  <Card title="IPX User Manual" icon="book-open" href="https://ospreymeasurement.systems/support/">
+    Detailed setup and troubleshooting.
+  </Card>
+  
+  <Card title="Support Portal" icon="help-circle" href="https://ospreymeasurement.systems/support/" target="_blank">
+    Report issues and access tools.
+  </Card>
+</Columns>
+
+<Callout kind="tip" title="Next Steps">
+Review the [Quickstart](/quickstart) guide after upgrading to test your setup.
+</Callout>
